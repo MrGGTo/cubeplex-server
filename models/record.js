@@ -5,7 +5,7 @@ const recordSchema = new mongoose.Schema({
 	time: {
 		type: Number,
 		required: true,
-		default: new Date(),
+		default: Date.now,
 	},
 	scramble: {
 		type: String,
