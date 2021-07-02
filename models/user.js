@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
+const Record = require("./record");
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -40,6 +41,19 @@ userSchema.statics.validate = function (user) {
 		repeat_password: Joi.ref("password"),
 	});
 	return schema.validate(user);
+};
+
+userSchema.methods.getStatistics = function () {
+	return Record.aggregate([
+		{
+			$match: {
+				user: mongoose.Types.ObjectId(this._id),
+			},
+		},
+		{
+			$group: { _id: "$user", average: { $avg: "$time" } },
+		},
+	]);
 };
 
 const User = mongoose.model("User", userSchema);
