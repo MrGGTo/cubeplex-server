@@ -7,6 +7,7 @@ const app = express();
 const records = require("./routes/records");
 const users = require("./routes/users");
 const cases = require("./routes/cases");
+const algorithms = require("./routes/algorithms");
 
 mongoose
 	.connect(process.env.DB_HOST, {
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api/records", records);
 app.use("/api/users", users);
 app.use("/api/cases", cases);
+app.use("/api/algorithms", algorithms);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
