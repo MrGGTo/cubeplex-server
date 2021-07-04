@@ -26,6 +26,15 @@ const algorithmSchema = new mongoose.Schema({
 	},
 });
 
+algorithmSchema.statics.validate = function (newCase) {
+	const schema = Joi.objectId({
+		name: Joi.string().max(255),
+		alg: Joi.string().min(4).max(255).required(),
+		case: Joi.objectId().required(),
+		user: Joi.objectId(),
+	});
+};
+
 const Algorithms = mongoose.model("Algorithms", algorithmSchema);
 
 module.exports = Algorithms;
