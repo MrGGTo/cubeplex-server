@@ -19,7 +19,7 @@ const caseSchema = new mongoose.Schema({
 caseSchema.statics.validate = function (caseObj) {
 	const schema = Joi.object({
 		name: Joi.string().max(255).required(),
-		type: Joi.string().valid(["oll", "pll", "other"]).required(),
+		type: Joi.string().required(),
 	});
 	return schema.validate(caseObj);
 };

@@ -51,7 +51,12 @@ userSchema.methods.getStatistics = function () {
 			},
 		},
 		{
-			$group: { _id: "$user", average: { $avg: "$time" } },
+			$group: {
+				_id: "$user",
+				average: { $avg: "$time" },
+				best: { $min: "$time" },
+				worst: { $max: "$time" },
+			},
 		},
 	]);
 };
