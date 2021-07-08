@@ -21,7 +21,7 @@ router.get("/:id", async (req, res) => {
 	res.send(user);
 });
 
-// Create new user
+// Register new user
 router.post("/", validate(User.validate), async (req, res) => {
 	let user = await User.findOne({ email: req.body.email });
 	if (user) return res.status(400).send("User already registered.");
@@ -31,7 +31,12 @@ router.post("/", validate(User.validate), async (req, res) => {
 	user.password = await bcrypt.hash(user.password, salt);
 
 	user = await user.save();
-	res.send(user);
+
+	const token = user.generateAuthToken();
+
+	res.header("Authorization", token).send(
+		_.pick(user, ["_id", "name", "email"])
+	);
 });
 
 // Delete user
