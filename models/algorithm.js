@@ -20,6 +20,10 @@ const algorithmSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
 	},
+	rating: {
+		type: Number,
+		default: 0,
+	},
 });
 
 algorithmSchema.statics.validate = function (newCase) {
@@ -29,6 +33,18 @@ algorithmSchema.statics.validate = function (newCase) {
 		user: Joi.objectId(),
 	});
 	return schema.validate(newCase);
+};
+
+algorithmSchema.statics.validateRate = function (rate) {
+	const schema = Joi.object({
+		rate: Joi.number().valid(1, -1).required(),
+	});
+	return schema.validate(rate);
+};
+
+algorithmSchema.methods.rate = function (rate) {
+	this.rating += rate;
+	return this.save();
 };
 
 const Algorithm = mongoose.model("Algorithms", algorithmSchema);

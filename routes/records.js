@@ -1,8 +1,10 @@
+const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
 
 const Record = require("../models/record");
 const validate = require("../middleware/validate");
+const auth = require("../middleware/auth");
 
 // Get all records
 router.get("/", async (req, res) => {
@@ -23,14 +25,17 @@ router.get("/:id", async (req, res) => {
 });
 
 // Create new record
-router.post("/", validate(Record.validate), async (req, res) => {
-	let record = new Record(req.body);
+router.post("/", [validate(Record.validate), auth], async (req, res) => {
+	let record = new Record({
+		..._.pick(req.body, ["time", "scamble"]),
+		user: req.user,
+	});
 	record = await record.save();
 	res.send(record);
 });
 
 // Update record
-router.put("/:id", validate(Record.validate), async (req, res) => {
+router.put("/:id", [validate(Record.validate), auth], async (req, res) => {
 	const record = await Record.findByIdAndUpdate(
 		req.params.id,
 		{ time: req.body.time, scramble: req.body.scramble },
@@ -41,7 +46,7 @@ router.put("/:id", validate(Record.validate), async (req, res) => {
 });
 
 // Delete record
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
 	const deleted = await Record.findByIdAndRemove(req.params.id);
 	if (!deleted) return res.status(404).send("Record not found.");
 	res.send(deleted);
