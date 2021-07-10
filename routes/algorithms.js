@@ -60,7 +60,7 @@ router.put(
 
 		algorithm = await algorithm.rate(req.body.rate);
 
-		return res.send(_.pick(algorithm, ["rating"]));
+		return res.send(_.pick(algorithm, ["_id", "rating"]));
 	}
 );
 
