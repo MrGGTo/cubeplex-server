@@ -5,6 +5,7 @@ const router = express.Router();
 const validate = require("../middleware/validate");
 const auth = require("../middleware/auth");
 const Algorithm = require("../models/algorithm");
+const AlgorithmRating = require("../models/algorithmRating");
 
 // Get all
 router.get("/", async (req, res) => {
@@ -58,10 +59,34 @@ router.put(
 		let algorithm = await Algorithm.findById(req.params.id);
 		if (!algorithm) return res.status(404).send("Algorithm not found.");
 
+		let rating = await AlgorithmRating.findOne({
+			user: req.user._id,
+			alg: req.params.id,
+		});
+		if (rating) {
+			if (rating.rate === req.body.rate)
+				return res.status(400).send("User has rated.");
+			await AlgorithmRating.findByIdAndRemove(rating._id);
+			await algorithm.rate(-rating.rate);
+		}
+
+		rating = new AlgorithmRating({
+			rate: req.body.rate,
+			user: req.user._id,
+			alg: req.params.id,
+		});
+		rating = await rating.save();
 		algorithm = await algorithm.rate(req.body.rate);
 
 		return res.send(_.pick(algorithm, ["_id", "rating"]));
 	}
 );
+
+router.delete("/rate/:id", auth, async (req, res) => {
+	const rating = await AlgorithmRating.findByIdAndRemove(req.params.id);
+	if (!rating) return res.status(404).send("Rating not found.");
+
+	res.send(rating);
+});
 
 module.exports = router;
