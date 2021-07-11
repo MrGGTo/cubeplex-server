@@ -7,6 +7,7 @@ const router = express.Router();
 const User = require("../models/user");
 const validate = require("../middleware/validate");
 const Record = require("../models/record");
+const auth = require("../middleware/auth");
 
 // Get all users
 router.get("/", async (req, res) => {
@@ -16,9 +17,19 @@ router.get("/", async (req, res) => {
 
 // Get one user
 router.get("/:id", async (req, res) => {
-	const user = await User.findById(req.params.id);
-	if (!record) return res.status(404).send("User not found.");
+	const user = await User.findById(req.params.id).populate("displayRecord");
+	if (!user) return res.status(404).send("User not found.");
 	res.send(user);
+});
+
+// Get User statistics
+router.get("/:id/statistics", async (req, res) => {
+	const user = await User.findById(req.params.id);
+	if (!user) return res.status(404).send("User not found.");
+
+	const statistics = await user.getStatistics();
+
+	res.send(statistics);
 });
 
 // Register new user
@@ -39,21 +50,27 @@ router.post("/", validate(User.validate), async (req, res) => {
 	);
 });
 
+// Update user
+router.put("/", auth, async (req, res) => {
+	const displayRecord = await Record.findById(req.body.displayRecord);
+	if (!displayRecord) return res.status(404).send("Record not found.");
+
+	const user = await User.findByIdAndUpdate(
+		req.user._id,
+		{
+			..._.pick(req.body, ["displayRecord"]),
+		},
+		{ new: true }
+	);
+
+	res.send(user);
+});
+
 // Delete user
 router.delete("/:id", async (req, res) => {
 	const deleted = await User.findByIdAndRemove(req.params.id);
 	if (!deleted) return res.status(404).send("User not found.");
 	res.send(deleted);
-});
-
-// Get User statistics
-router.get("/:id/statistics", async (req, res) => {
-	const user = await User.findById(req.params.id);
-	if (!user) return res.status(404).send("User not found.");
-
-	const statistics = await user.getStatistics();
-
-	res.send(statistics);
 });
 
 module.exports = router;

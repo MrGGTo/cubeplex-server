@@ -16,19 +16,42 @@ const recordSchema = new mongoose.Schema({
 		ref: "User",
 		required: true,
 	},
+	starred: {
+		type: Boolean,
+	},
+	description: {
+		type: String,
+		minlength: 1,
+		maxlength: 255,
+	},
+	location: {
+		type: new mongoose.Schema(
+			{
+				lat: { type: Number, required: true },
+				lng: { type: Number, required: true },
+			},
+			{ _id: false }
+		),
+	},
 });
 
 recordSchema.statics.validate = function (record) {
 	const schema = Joi.object({
 		time: Joi.number().required(),
 		scramble: Joi.string(),
-		user: Joi.objectId().required(),
+		starred: Joi.boolean(),
+		description: Joi.string().min(1).max(255),
+		location: Joi.object(),
 	});
 	return schema.validate(record);
 };
 
 recordSchema.methods.getTime = function () {
 	return this._id.getTimestamp();
+};
+
+recordSchema.methods.toggleStar = function () {
+	this.starred = !this.starred;
 };
 
 const Record = mongoose.model("Record", recordSchema);

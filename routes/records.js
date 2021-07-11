@@ -12,6 +12,15 @@ router.get("/", async (req, res) => {
 	res.send(result);
 });
 
+// Get Starred Records
+router.get("/starred", auth, async (req, res) => {
+	const starredRecords = await Record.find({
+		starred: true,
+		user: req.user._id,
+	});
+	res.send(starredRecords);
+});
+
 // Get user's records
 router.get("/:id", async (req, res) => {
 	const user = await Record.find({ user: req.body.id });
@@ -27,7 +36,13 @@ router.get("/:id", async (req, res) => {
 // Create new record
 router.post("/", [validate(Record.validate), auth], async (req, res) => {
 	let record = new Record({
-		..._.pick(req.body, ["time", "scamble"]),
+		..._.pick(req.body, [
+			"time",
+			"scamble",
+			"location",
+			"starred",
+			"description",
+		]),
 		user: req.user,
 	});
 	record = await record.save();
@@ -43,6 +58,16 @@ router.put("/:id", [validate(Record.validate), auth], async (req, res) => {
 	);
 	if (!record) return res.status(404).send("Record not found.");
 	res.send(record);
+});
+
+// Star record
+router.put("/:id/star", auth, async (req, res) => {
+	let record = await Record.findById(req.params.id);
+	if (!record) return res.status(404).send("Record not found.");
+
+	record.toggleStar();
+	record = await record.save();
+	res.send({ starred: record.starred });
 });
 
 // Delete record

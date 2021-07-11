@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
 	token: {
 		type: String,
 	},
+	displayRecord: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Record",
+	},
 });
 
 userSchema.statics.validate = function (user) {
