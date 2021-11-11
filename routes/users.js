@@ -11,7 +11,8 @@ const auth = require("../middleware/auth");
 
 // Get all users
 router.get("/", async (req, res) => {
-	const users = await User.find();
+	let users = await User.find();
+	users = users.map((user) => _.pick(user, ["_id", "name", "email"]));
 	res.send(users);
 });
 
