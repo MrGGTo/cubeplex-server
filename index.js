@@ -10,8 +10,10 @@ const cases = require("./routes/cases");
 const algorithms = require("./routes/algorithms");
 const auth = require("./routes/auth");
 
+const databaseHostUrl = `mongodb+srv://cubeplex-api:${process.env.DB_HOST_KEY}@development.chioc.mongodb.net/cubeplex?retryWrites=true&w=majority`;
+
 mongoose
-	.connect(process.env.DB_HOST, {
+	.connect(databaseHostUrl, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
