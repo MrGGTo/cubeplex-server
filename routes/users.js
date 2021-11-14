@@ -24,9 +24,9 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/availability/:name", async (req, res) => {
-	const user = await User.findOne({ name: req.params.id });
-	if (user) res.status(400).send("User already registered.");
-	res.send("User Available");
+	const user = await User.findOne({ name: req.params.name });
+	if (user) res.status(400).send("Username already registered.");
+	res.send("Username Available");
 });
 
 // Get User statistics
