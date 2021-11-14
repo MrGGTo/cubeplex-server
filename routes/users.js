@@ -23,6 +23,12 @@ router.get("/:id", async (req, res) => {
 	res.send(user);
 });
 
+router.get("/availability/:name", async (req, res) => {
+	const user = await User.findOne({ name: req.params.id });
+	if (user) res.status(400).send("User already registered.");
+	res.send("User Available");
+});
+
 // Get User statistics
 router.get("/:id/statistics", async (req, res) => {
 	const user = await User.findById(req.params.id);
