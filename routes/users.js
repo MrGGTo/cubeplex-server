@@ -12,7 +12,7 @@ const auth = require("../middleware/auth");
 // Get all users
 router.get("/", async (req, res) => {
 	let users = await User.find();
-	users = users.map((user) => _.pick(user, ["_id", "name", "email"]));
+	users = users.map((user) => _.pick(user, ["_id", "name"]));
 	res.send(users);
 });
 
@@ -35,10 +35,10 @@ router.get("/:id/statistics", async (req, res) => {
 
 // Register new user
 router.post("/", validate(User.validate), async (req, res) => {
-	let user = await User.findOne({ email: req.body.email });
+	let user = await User.findOne({ name: req.body.name });
 	if (user) return res.status(400).send("User already registered.");
 
-	user = new User(_.pick(req.body, ["name", "email", "password"]));
+	user = new User(_.pick(req.body, ["name", "password"]));
 	const salt = await bcrypt.genSalt(10);
 	user.password = await bcrypt.hash(user.password, salt);
 
@@ -46,9 +46,7 @@ router.post("/", validate(User.validate), async (req, res) => {
 
 	const token = user.generateAuthToken();
 
-	res.header("Authorization", token).send(
-		_.pick(user, ["_id", "name", "email"])
-	);
+	res.header("Authorization", token).send(_.pick(user, ["_id", "name"]));
 });
 
 // Update user

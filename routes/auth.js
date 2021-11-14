@@ -8,8 +8,8 @@ const validate = require("../middleware/validate");
 const User = require("../models/user");
 
 router.post("/", validate(validator), async (req, res) => {
-	let user = await User.findOne({ email: req.body.email });
-	if (!user) return res.status(400).send("Invalid email or password.");
+	let user = await User.findOne({ name: req.body.name });
+	if (!user) return res.status(400).send("Invalid name or password.");
 
 	const validPassword = await bcrypt.compare(
 		req.body.password,
@@ -17,7 +17,7 @@ router.post("/", validate(validator), async (req, res) => {
 	);
 
 	if (!validPassword)
-		return res.status(400).send("Invalid email or password.");
+		return res.status(400).send("Invalid name or password.");
 
 	const token = user.generateAuthToken();
 
@@ -26,7 +26,7 @@ router.post("/", validate(validator), async (req, res) => {
 
 function validator(user) {
 	const schema = Joi.object({
-		email: Joi.string().email().required(),
+		name: Joi.string().required(),
 		password: Joi.string()
 			.pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
 			.required(),

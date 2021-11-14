@@ -13,7 +13,7 @@ const auth = require("./routes/auth");
 const databaseHostUrl = `mongodb+srv://cubeplex-api:${process.env.DB_HOST_KEY}@development.chioc.mongodb.net/cubeplex?retryWrites=true&w=majority`;
 
 mongoose
-	.connect(databaseHostUrl, {
+	.connect(process.env.DB_HOST || databaseHostUrl, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
