@@ -13,12 +13,12 @@ const auth = require("./routes/auth");
 const databaseHostUrl = `mongodb+srv://cubeplex-api:${process.env.DB_HOST_KEY}@development.chioc.mongodb.net/cubeplex?retryWrites=true&w=majority`;
 
 mongoose
-	.connect(process.env.DB_HOST || databaseHostUrl, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
-	.then(() => console.log("Connected to MongoDB..."))
-	.catch((err) => console.log(err));
+  .connect(process.env.DB_HOST || databaseHostUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB..."))
+  .catch((err) => console.log(err));
 
 app.use(express.json());
 app.use("/api/records", records);
