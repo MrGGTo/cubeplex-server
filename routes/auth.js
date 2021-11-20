@@ -4,8 +4,14 @@ const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
 
+const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 const User = require("../models/user");
+
+
+router.get("/me", auth, async (req, res) => {
+  res.send(req.user);
+});
 
 router.post("/", validate(validator), async (req, res) => {
   let user = await User.findOne({ name: req.body.name });
