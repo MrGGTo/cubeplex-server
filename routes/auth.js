@@ -22,8 +22,8 @@ router.post("/", validate(validator), async (req, res) => {
   if (!validPassword) return res.status(400).send("Invalid name or password.");
 
   const token = user.generateAuthToken();
-
-  res.send(token);
+  user = _.pick(user, ["_id", "name"]);
+  res.send({ user, token });
 });
 
 function validator(user) {
